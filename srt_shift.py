@@ -5,6 +5,7 @@ def main():
   try:
     filename = sys.argv[1]
     shift = float(sys.argv[2])
+  
   except IndexError, ValueError:
     print "usage: srt-shift filename shift"
     return
@@ -43,8 +44,11 @@ def main():
         
         def shift_time(time):
           shift
-          time[1] += (time[2] + shift) / 60
-          time[2] = (time[2] + shift) % 60
+          new_shift = int(shift) + int((time[3] + (shift-int(shift))*1000) / 1000)
+          time[1] += int((time[2] + new_shift) / 60)
+          time[2] = (time[2] + new_shift) % 60
+          time[3] = int((time[3] + (shift-int(shift))*1000) % 1000)		  
+
           return time
         
         start, end = map(shift_time, (start, end))
@@ -62,8 +66,12 @@ def main():
         
       elif i >= 3:
         out += '%s\n' % line
+
+  out_file = open(filename, "w")
+  out_file.write(out)
+  out_file.close()
+
   
-  print out
 
 if __name__ == '__main__':
   main()
